@@ -113,7 +113,6 @@ $(function () {
     searchCity(history[history.length - 1]);
   }
   for (i = 0; i < history.length; i++) {
-    console.log("test");
     save(history[i]);
   }
 
