@@ -1,12 +1,11 @@
 $(function () {
   //Dom Variables
-  var LiEl = $("<li>");
-  var cardEl = $("<div>");
   var cardBody = $("<div>");
   var search = $("#search");
   //JavaScript Variables
   var now = moment().format("L");
   var API_key = "a2e3bbaa7fcbfdcff54e3b11604bb2fb";
+  var cityNameArr = [];
 
   //Function Definitions
   function searchCity(cityName) {
@@ -35,6 +34,7 @@ $(function () {
 
       uvIndex(lat, lon);
       fiveDayForecast(lat, lon);
+      saveData(cityName);
     });
   }
 
@@ -66,8 +66,6 @@ $(function () {
       url: queryUrl,
       method: "GET",
     }).then(function (response) {
-      console.log(response);
-
       for (i = 0; i < 5; i++) {
         var forecast = $("<div>");
         forecast.addClass(
@@ -91,6 +89,17 @@ $(function () {
         $("#forecast").append(forecast);
       }
     });
+  }
+  function saveData(cityName) {
+    if (cityName) {
+      cityNameArr.push(cityName);
+      var liEl = $("<li>");
+      liEl.addClass("list-group-item");
+      liEl.text(cityName);
+      $("#search-history").append(liEl);
+      localStorage.setItem("city", cityNameArr);
+      console.log(localStorage);
+    }
   }
 
   //Function Calls
