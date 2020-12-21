@@ -15,6 +15,12 @@ $(function () {
       url: queryUrl,
       method: "GET",
     }).then(function (response) {
+      if (history.indexOf(cityName) === -1) {
+        history.push(cityName);
+        localStorage.setItem("city", JSON.stringify(history));
+        save(cityName);
+        console.log(localStorage);
+      }
       cardBody.empty();
       var icon = $("<img>").attr(
         "src",
@@ -34,7 +40,6 @@ $(function () {
 
       uvIndex(lat, lon);
       fiveDayForecast(lat, lon);
-      saveData(cityName);
     });
   }
 
@@ -60,12 +65,17 @@ $(function () {
   }
 
   function fiveDayForecast(lat, lon) {
-    var queryUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly&appid=${API_key}`;
+    var queryUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly&appid=${API_key}&units=imperial`;
 
     $.ajax({
       url: queryUrl,
       method: "GET",
     }).then(function (response) {
+      $("#forecast").empty();
+      var fiveDay = $("<h5>")
+        .addClass("mt-3 font-weight-bold")
+        .text("5-Day Forecast:");
+      $("#forecast").append(fiveDay);
       for (i = 0; i < 5; i++) {
         var forecast = $("<div>");
         forecast.addClass(
@@ -86,20 +96,25 @@ $(function () {
           `Humidity: ${response.daily[i].humidity} %`
         );
         forecast.append(headLineTag, icon, temp, humidity);
+
         $("#forecast").append(forecast);
       }
     });
   }
-  function saveData(cityName) {
-    if (cityName) {
-      cityNameArr.push(cityName);
-      var liEl = $("<li>");
-      liEl.addClass("list-group-item");
-      liEl.text(cityName);
-      $("#search-history").append(liEl);
-      localStorage.setItem("city", cityNameArr);
-      console.log(localStorage);
-    }
+
+  function save(text) {
+    var liEl = $("<li>");
+    liEl.addClass("list-group-item");
+    liEl.text(text);
+    $("#search-history").append(liEl);
+  }
+  var history = JSON.parse(localStorage.getItem("city")) || [];
+  if (history.length > 0) {
+    searchCity(history[history.length - 1]);
+  }
+  for (i = 0; i < history.length; i++) {
+    console.log("test");
+    save(history[i]);
   }
 
   //Function Calls
